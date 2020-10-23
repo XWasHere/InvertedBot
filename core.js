@@ -4,7 +4,9 @@ const port = 3000;
 
 
 // ================ START WEBSERVER CODE ==================
-app.get('/', (req, res) => res.send('Hm. Hello remote user. What are you doing on my API?'));
+
+
+app.get('/API/', (req, res) => res.send('Hm. Hello remote user. What are you doing on my API?'));
 
 app.listen(port, () => console.log(`listening for requests on port ${port}`));
 // ================= END HTTPS CODE ===================
