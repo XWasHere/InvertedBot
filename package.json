@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/XWasHere/InvertedBot#readme",
   "dependencies": {
+    "config.js": "^0.1.0",
+    "cookie-parser": "^1.4.5",
     "discord.js": "^12.4.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "fetch": "^1.1.0",
+    "node-fetch": "^2.6.1"
   }
 }
