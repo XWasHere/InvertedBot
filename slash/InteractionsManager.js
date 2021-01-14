@@ -1,3 +1,4 @@
+'use strict'
 const SlashCommandManager = require('./SlashCommandManager.js')
 
 class InteractionsManager {

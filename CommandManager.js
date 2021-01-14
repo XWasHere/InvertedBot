@@ -1,3 +1,4 @@
+'use strict'
 const Discord = require('discord.js')
 const fs = require('fs')
 const cmdlib = require('./cmds/_Command.js')

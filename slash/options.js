@@ -1,3 +1,4 @@
+'use strict'
 const Enum = require('./enum.js')
 const Discord = require('discord.js')
 class BaseOption {

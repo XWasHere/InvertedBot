@@ -1,3 +1,4 @@
+'use strict'
 const ApplicationCommandOptionType = {
 	SUB_COMMAND: 1,
 	SUB_COMMAND_GROUP: 2,

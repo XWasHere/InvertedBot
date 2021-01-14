@@ -1,3 +1,4 @@
+'use strict'
 const fs                 = require('fs')
 const fetch              = require('node-fetch')
 const Discord            = require('discord.js')

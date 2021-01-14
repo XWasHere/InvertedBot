@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const {PermissionManager, PermissionGroups} = require('./Permissions.js');
+const {PermissionManager} = require('./Permissions.js');
 const CommandManager = require('./CommandManager.js')
 const DiscordInteractions = require("discord-interactions");
 const SlashLib = require('./slash')
@@ -17,7 +17,7 @@ let interactionManager = new SlashLib.InteractionsManager({
 })
 
 // interactions api
-app = express()
+const app = express()
 app.use(bodyParser.json());
 app.post('/interactions', DiscordInteractions.verifyKeyMiddleware(process.env.pubkey), (req, res) => interactionManager.handleInteraction(req, res))
 app.listen(8080)
@@ -34,9 +34,7 @@ function init() {
 }
 
 function main() {
-	if (process.argv[2] == '-r') {
-		
-	}
+	console.log('ready')
 	client.on('message', (msg) => {
 		let message = msg.content
 		if (!message.startsWith(prefix)) return
@@ -47,12 +45,11 @@ function main() {
 		commands.runcommand(command, args, msg)
 	})
 }
-
 new PermissionManager('./permissions')
 	.then(p => {
 		globalThis.permissions = p;
 	}, console.error)
 	.then(slashCmdManager.load())
-	.then(slashCmdManager.sync())
+//	.then(slashCmdManager.sync())
 	.then(Promise.all(commands.loadAll()))
 	.then(init, console.error)
