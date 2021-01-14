@@ -4,12 +4,9 @@ module.exports = {
 	exec(args, message, command) {
 		message.channel.send(args.join(' '))
 	},
-	execSlash(inter,args, client) {
-		// reminder: respond within two seconds
-		return new Promise((res, rej) => {
-			res({type: 2})
-			client.channels.fetch(inter.channel_id)
-				.then(that => that.send(args.msg))
-		})
+	execSlash(req,res, args, client) {
+		res.send('{type: 2}')
+		client.channels.fetch(req.body.channel_id)
+			.then(that => that.send(args.msg))
 	}
 }

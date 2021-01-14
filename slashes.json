@@ -1,0 +1,12 @@
+{
+	"say": {
+		"description": "Makes the bot say something!",
+		"parameters": {
+			"msg": {
+				"type": "STRING",
+				"description": "What to say",
+				"required": true
+			}
+		}
+	}
+}

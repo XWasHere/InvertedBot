@@ -10,19 +10,16 @@ class CommandManager {
 		this.loaded = new Discord.Collection()
 		this.placeholder = require(CommandManager.cmddir + '_Reload.js')
 		this.client = opts.client
+		opts.slashmgr.on('command', this.execSlash.bind(this))
 	}
 
-	execSlash(i) {
-		let cmd = this.commands.get(i.data.name)
-		let args = {}
-		i.data.options.forEach(v => {
-			args[v.name] = v.value
-		})
-		if (cmdlib.checkPerm(cmd, i.member)) {
-			return cmd.execSlash(i, args, this.client)
+	execSlash(name, req, res, args) {
+		let cmd = this.commands.get(name)
+		if (cmdlib.checkPerm(cmd, req.body.member)) {
+			return cmd.execSlash(req, res, args, this.client)
 		}
 		else {
-			return new Promise((res,rej) => {res({type:5})}) // lmao imagine everybody seeing what they put in there
+			res.send('{type:5}') // lmao imagine everybody seeing what they put in there
 		}
 	}
 
@@ -100,6 +97,9 @@ class CommandManager {
 			if(command == 'reload') {
 				if (cmdlib.checkPerm({permissions:{group:['owners']}}, message.member)) this.reloadcmd(args, message)
 			}
+			else if (command == 'help') {
+
+			}
 			else if (this.commands.has(command)) {
 				let cmd = this.commands.get(command)
 				if (cmdlib.checkPerm(cmd, message.member)) {
@@ -112,6 +112,10 @@ class CommandManager {
 			res()
 		})
 	}
+
+	help(args, message) {
+			
+	}
 }
 
-module.exports =CommandManager
+module.exports = CommandManager

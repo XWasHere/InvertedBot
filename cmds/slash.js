@@ -1,20 +1,25 @@
 const Discord=require('discord.js')
 const fetch = require('node-fetch')
 
-class ApplicationCommand {
+class UnpreparedCommand {
 	constructor() {
-		this.id = undefined
-		this.application_id = undefined
 		this.name = undefined
 		this.description = undefined
-		this.options = new Discord.Collection()
+		this.params = new Discord.Collection()
 		this.subs = new Discord.Collection()
 		this.subgroups = new Discord.Collection()
 	}
-}
 
-class ApplicationCommandOption {
-
+	prepare() {
+		let a = {}
+		a.name = this.name
+		a.description = this.description
+		a.options = []
+		this.params.each(v => {
+			a.options.push(v) 
+		})
+		return a
+	}
 }
 
 function stringFrom(arr, i) {
@@ -48,7 +53,7 @@ function CommandUI(message, args) {
 			.then(r => r.json())
 			.then(r => {
 				let menu = new Discord.MessageEmbed()
-				menu.setTitle(`Commands for ${id}`)
+				menu.setTitle(`Commands for ${id}, (${r.length}/50)`)
 				menutext = ""
 				r.forEach(a => {
 					menutext += `${a.name} (${a.id})\n`
@@ -61,17 +66,15 @@ function CommandUI(message, args) {
 	function CMenuRoot() {
 		let cmenu = new Discord.MessageEmbed()
 		let paramStr = ''
-		newcmd.each((v, i) => {
-			if (i.type in [3,4,5,6,7,8]) {
-				paramStr += '()'
-			}
+		newcmd.params.each((v, i) => {
+			paramStr += `(placeholder) ${v.name}${(v.required?'':'?')}: ${v.description}\n`
 		})
 		cmenu.setTitle('Create Command')
 		cmenu.addField('General', `
-		Name*: ${newcmd.name} 
-		Description*: ${newcmd.description}
+		Name\\*: ${newcmd.name} 
+		Description\\*: ${newcmd.description}
 		`)
-		cmenu.addField('Paramaters', paramStr)
+		if (paramStr!="") cmenu.addField('Parameters', paramStr)
 		msg.edit(cmenu)
 	}
 
@@ -104,6 +107,13 @@ function CommandUI(message, args) {
 				}
 				break
 			case 'DELETE':
+				fetch(`https://discord.com/api/v8/applications/${process.env.clientid}/guilds/${sel}/commands/${c[1]}`, {
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bot ${process.env.discordtoken}`
+					}
+				})
+					.then((r) => {GuildMenu(sel)})
 				break
 			case 'SET':
 				if (p1 == 'NAME') {
@@ -119,21 +129,21 @@ function CommandUI(message, args) {
 				if (p1 == 'CREATE') {
 					p2 = c[2].toUpperCase()
 					p3 = c[3]
-					if (p2 == 'STRING') copts.set(p3,{type: 3, name:p3})
-					else if (p2 == 'INT') copts.set(p3,{type: 4, name: p3})
-					else if (p2 == 'BOOL') copts.set(p3,{type: 5, name: p3})
+					if (p2 == 'STRING') newcmd.params.set(p3,{type: 3, name:p3})
+					else if (p2 == 'INT') newcmd.params.set(p3,{type: 4, name: p3})
+					else if (p2 == 'BOOL') newcmd.params.set(p3,{type: 5, name: p3})
 				}
 				else if (p1 == 'SET') {
 					p2 = c[2].toUpperCase()
 					if (p2 == 'DESCRIPTION') {
 						p3 = c[3]
 						args2 = stringFrom(c, 4)
-						copts.get(p3).description = args2
+						newcmd.params.get(p3).description = args2
 					}
 					else if (p2 == 'REQUIRED') {
 						p4 = c[4].toUpperCase()
-						if (p4 == 'TRUE') copts.get(c[3]).required = true
-						else if (p4 == 'FALSE') copts.get(c[3]).required = false
+						if (p4 == 'TRUE') newcmd.params.get(c[3]).required = true
+						else if (p4 == 'FALSE') newcmd.params.get(c[3]).required = false
 					}
 				}
 				break
@@ -162,6 +172,6 @@ function CommandUI(message, args) {
 module.exports = {
 	permissions: {group: ['owners']},
 	exec(args,message) {
-		//manager = CommandUI(message, args)
+		manager = CommandUI(message, args)
 	}
 }
